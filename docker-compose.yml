@@ -1,25 +1,40 @@
-version: '3.8'
 services:
   dotnet_postgres:
     image: postgres:alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: MainProject
     
-  dotnet_rabbitmq:
-    image: rabbitmq:3-alpine
-    
-  dotnet_minio:
-    image: minio/minio:latest
-    
-  dotnet_mongodb:
-    image: mongo:latest
-    
-  dotnet_jaeger:
-    image: jaegertracing/all-in-one:latest
+#  dotnet_rabbitmq:
+#    image: rabbitmq:3-alpine
+#    
+#  dotnet_minio:
+#    image: minio/minio:latest
+#    
+#  dotnet_mongodb:
+#    image: mongo:latest
+#    
+#  dotnet_jaeger:
+#    image: jaegertracing/all-in-one:latest
     
   dotnet_main:
-    image: dotnet-web
-    
-  dotnet_mailing:
-    image: dotnet-web
-    
-  dotnet_storage:
-    image: dotnet-web
+    build:
+      context: "."
+      dockerfile: "Dotnet.Homeworks.MainProject/Dockerfile"
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      ConnectionStrings__Default:
+        "Host=database;Port=5432;Username=user;Password=password;Database=MainProject"
+    depends_on:
+      - dotnet_postgres
+      
+#  dotnet_mailing:
+#    image: dotnet-web
+#    
+#  dotnet_storage:
+#    image: dotnet-web
